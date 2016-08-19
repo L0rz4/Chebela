@@ -37,6 +37,7 @@ MotorController::MotorController(int cs, int baudrate)
 	} while (!init_successfull);
 }
 
+
 // Reads RPM data from motor controller
 int MotorController::ReadRPM() {
 	CAN->sendMsgBuf(0x60b, 0, 8, (byte*)stmp60b);
