@@ -41,7 +41,7 @@ MotorController::MotorController(int cs, int baudrate)
 // Reads RPM data from motor controller
 int MotorController::ReadRPM() {
 	CAN->sendMsgBuf(0x60b, 0, 8, (byte*)stmp60b);
-	delay(100);
+	delay(10);
 	if (CAN_MSGAVAIL == CAN->checkReceive())            // check if data coming
 	{
 		unsigned long id = 0;
@@ -72,17 +72,6 @@ int MotorController::ReadRPM() {
 			// Indicates that the data has been read and stored to cache
 			return 1;
 
-			/*
-			Serial.print("Hitrost motorja: ");
-			Serial.print();
-			Serial.println();
-			Serial.print(buf[4], HEX);Serial.print("\t");
-			Serial.print(buf[5], HEX);Serial.print("\t");
-			Serial.print(buf[6], HEX);Serial.print("\t");
-			Serial.print(buf[7], HEX);Serial.print("\t");
-
-			Serial.println();
-			*/
 		}
 
 		// Indicates that the data hasa been read, but the returned data does not have RPM value
