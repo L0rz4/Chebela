@@ -55,6 +55,9 @@ int MotorController::ReadRPM() {
 		if (buf[1] == 0x03 && buf[2] == 0x20 && buf[3] == 0x01) {
 
 			RPM = Conversion::ByteToInt16(&buf[4]);
+			if (RPM < 0) {
+				RPM *= -1;
+			}
 //			Serial.print("Motor speed received: ");
 			Serial.println("Received data:");
 			Serial.print(buf[0], HEX); Serial.print("\t");

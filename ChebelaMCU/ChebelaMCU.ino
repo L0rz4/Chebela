@@ -78,5 +78,18 @@ void receiveData(int byteCount) {
 void sendData() {
 	//Serial.print("Current velocity: ");
 	//Serial.println(number);
+	/*
+	Byte 0: 8-bit unsigned integer - velocity
+	Byte 1: 8-bit unsigned integer - SOC
+	Byte 2-5: 32-bit unsigned integer - kilometers driven
+	Byte 6-9: 32-bit unsigned integer - motor temperature
+	Byte 10-11: 16-bit unsigned integer - motor current
+	Byte 12: 8-bit char - Lights
+			Bit 0: Turn signal left
+			Bit 1: Turn signal right
+			Bit 2: Hazard lights
+			Bit 3: Head lights - High Beam
+	*/
+
 	Wire.write(number);
 }
