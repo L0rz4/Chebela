@@ -25,11 +25,11 @@ MotorController::MotorController(int cs, int baudrate)
 		if (CAN_OK == result)
 		{
 			init_successfull = true;
-			Serial.println("CAN BUS Shield init ok!");
+			Serial.println("CAN BUS for Motor Controller Shield init ok!");
 		}
 		else
 		{
-			Serial.println("CAN BUS Shield init fail");
+			Serial.println("CAN BUS for Motor Controller Shield init fail");
 			Serial.println("Init CAN BUS Shield again");
 			delay(500);
 		}

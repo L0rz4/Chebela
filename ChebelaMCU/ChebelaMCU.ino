@@ -4,6 +4,7 @@
  Author:	Matej Lorenci
 */
 
+#include "BMS.h"
 #include <Wire.h>
 #include "Communication.h"
 #include <mcp_can.h>
@@ -18,9 +19,13 @@
 #define RPM_TO_KMH_RATIO 76
 
 MotorController *mc;
+BMS *bms;
 
 int number = 0;
 int state = 0;
+
+int driving_direction = 0;
+long last_driving_direction = 0;
 
 
 // the setup function runs once when you press reset or power the board
@@ -30,8 +35,14 @@ void setup() {
 	Serial.println("Serial communication up and running.");
 
 	mc = new MotorController(53, CAN_250KBPS);
+	bms = new BMS(49, CAN_1000KBPS);
 
 	pinMode(13, OUTPUT);
+	pinMode(24, OUTPUT);
+	pinMode(25, OUTPUT);
+	pinMode(22, INPUT_PULLUP);
+	pinMode(23, INPUT_PULLUP);
+
 
 	// initialize i2c slave
 	Wire.begin(i2c_SLAVE_ADDRESS);
@@ -44,12 +55,50 @@ void loop() {
 	//Serial.print("CAN read status: ");
 	//Serial.print(mc->ReadRPM());
 	//Serial.println();
-	//delay(500);
+	delay(500);
 
 	if (mc->ReadRPM() == 1) {
 		number = mc->ReturnRPM() / RPM_TO_KMH_RATIO;
 	}
+	if (bms->ReadBMS() == 1) {
+
+	}
 	//number = analogRead(A3) / 10;	
+	if (digitalRead(22) == LOW) {
+		if (millis() - last_driving_direction > 1000) {
+			last_driving_direction = millis();
+			driving_direction++;
+			if (driving_direction > 1) {
+				driving_direction = 1;
+			}
+		}
+	}
+	else if (digitalRead(23) == LOW) {
+		if (millis() - last_driving_direction > 1000) {
+			last_driving_direction = millis();
+			driving_direction--;
+			if (driving_direction < -1) {
+				driving_direction = -1;
+			}
+		}
+	}
+
+	if (driving_direction == 1) {
+		digitalWrite(24, LOW);
+		digitalWrite(25, HIGH);
+	}
+	else if (driving_direction == -1) {
+		digitalWrite(24, HIGH);
+		digitalWrite(25, LOW);
+	}
+	else {
+		digitalWrite(24, HIGH);
+		digitalWrite(25, HIGH);
+	}
+	Serial.print("Driving direction: ");
+	Serial.println(driving_direction);
+	
+
 }
 
 
@@ -92,4 +141,6 @@ void sendData() {
 	*/
 
 	Wire.write(number);
+	Wire.write((char)bms->ReturnSOC());
+
 }

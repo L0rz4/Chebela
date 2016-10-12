@@ -75,12 +75,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BMS.h" />
     <ClInclude Include="Communication.h" />
     <ClInclude Include="Conversion.h" />
     <ClInclude Include="MotorController.h" />
     <ClInclude Include="__vm\.ChebelaMCU.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BMS.cpp" />
     <ClCompile Include="Communication.cpp" />
     <ClCompile Include="Conversion.cpp" />
     <ClCompile Include="MotorController.cpp" />
