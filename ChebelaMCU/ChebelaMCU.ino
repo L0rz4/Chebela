@@ -24,7 +24,7 @@ BMS *bms;
 int number = 0;
 int state = 0;
 
-int driving_direction = 0;
+int driving_direction = 1;
 long last_driving_direction = 0;
 
 
@@ -33,6 +33,8 @@ void setup() {
 
 	Serial.begin(115200);
 	Serial.println("Serial communication up and running.");
+
+	pinMode(49, OUTPUT);
 
 	mc = new MotorController(53, CAN_250KBPS);
 	bms = new BMS(49, CAN_1000KBPS);
@@ -46,7 +48,6 @@ void setup() {
 
 	// initialize i2c slave
 	Wire.begin(i2c_SLAVE_ADDRESS);
-	Wire.onReceive(receiveData);
 	Wire.onRequest(sendData);
 }
 
@@ -59,8 +60,12 @@ void loop() {
 
 	if (mc->ReadRPM() == 1) {
 		number = mc->ReturnRPM() / RPM_TO_KMH_RATIO;
+		Serial.print("Vehicle velocity: ");
+		Serial.println(number);
 	}
 	if (bms->ReadBMS() == 1) {
+		Serial.print("SOC: ");
+		Serial.println(bms->ReturnSOC());
 
 	}
 	//number = analogRead(A3) / 10;	
@@ -68,8 +73,8 @@ void loop() {
 		if (millis() - last_driving_direction > 1000) {
 			last_driving_direction = millis();
 			driving_direction++;
-			if (driving_direction > 1) {
-				driving_direction = 1;
+			if (driving_direction > 2) {
+				driving_direction = 2;
 			}
 		}
 	}
@@ -77,17 +82,17 @@ void loop() {
 		if (millis() - last_driving_direction > 1000) {
 			last_driving_direction = millis();
 			driving_direction--;
-			if (driving_direction < -1) {
-				driving_direction = -1;
+			if (driving_direction < 0) {
+				driving_direction = 0;
 			}
 		}
 	}
 
-	if (driving_direction == 1) {
+	if (driving_direction == 2) {
 		digitalWrite(24, LOW);
 		digitalWrite(25, HIGH);
 	}
-	else if (driving_direction == -1) {
+	else if (driving_direction == 0) {
 		digitalWrite(24, HIGH);
 		digitalWrite(25, LOW);
 	}
@@ -102,26 +107,6 @@ void loop() {
 }
 
 
-// callback for received data
-void receiveData(int byteCount) {
-	while (Wire.available()) {
-		number = Wire.read();
-		Serial.print("data received : ");
-		Serial.println(number); 
-
-		if (number == 1) {
-
-			if (state == 0) {
-				digitalWrite(13, HIGH); // set the LED on
-				state = 1;
-			}
-			else {
-				digitalWrite(13, LOW); // set the LED off
-				state = 0;
-			}
-		}
-	}
-}
 
 // callback for sending data
 void sendData() {
@@ -140,7 +125,23 @@ void sendData() {
 			Bit 3: Head lights - High Beam
 	*/
 
-	Wire.write(number);
-	Wire.write((char)bms->ReturnSOC());
+	char tmp[12] = { (char)number , (char)bms->ReturnSOC(), (char)driving_direction };
 
+	//Wire.write((char)number);
+	//Wire.write((char)bms->ReturnSOC());
+	//Wire.write((char)driving_direction);
+	Wire.write(tmp, 12);
+	/*
+	Serial.println("Sent data:");
+	Serial.print(tmp[0], HEX); Serial.print("\t");
+	Serial.print(tmp[1], HEX); Serial.print("\t");
+	Serial.print(tmp[2], HEX); Serial.print("\t");
+	Serial.print(tmp[3], HEX); Serial.print("\t");
+	Serial.println();
+	Serial.print(tmp[4], HEX); Serial.print("\t");
+	Serial.print(tmp[5], HEX); Serial.print("\t");
+	Serial.print(tmp[6], HEX); Serial.print("\t");
+	Serial.print(tmp[7], HEX); Serial.print("\t");
+	Serial.println();
+	*/
 }

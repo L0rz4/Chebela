@@ -37,6 +37,8 @@ BMS::BMS(int cs, int baudrate) {
 }
 
 int BMS::ReadBMS() {
+	Serial.println("Check BMS CAN for receive");
+
 	if (CAN_MSGAVAIL == CAN->checkReceive())            // check if data coming
 	{
 		unsigned long id = 0;
@@ -45,6 +47,9 @@ int BMS::ReadBMS() {
 
 		Serial.println("Message on CAN BMS");
 		CAN->readMsgBuf(&id, (byte*)&len, (byte*)buf);
+		
+		Serial.print("BMS CAN id: ");
+		Serial.println(id);
 
 		if (id == 0x031) {
 			stmp31[0] = buf[0];
