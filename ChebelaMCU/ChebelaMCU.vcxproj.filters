@@ -24,12 +24,24 @@
     <ClInclude Include="MotorController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Communication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BMS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Conversion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MotorController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Communication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

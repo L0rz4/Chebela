@@ -25,11 +25,11 @@ MotorController::MotorController(int cs, int baudrate)
 		if (CAN_OK == result)
 		{
 			init_successfull = true;
-			Serial.println("CAN BUS Shield init ok!");
+			Serial.println("CAN BUS for Motor Controller Shield init ok!");
 		}
 		else
 		{
-			Serial.println("CAN BUS Shield init fail");
+			Serial.println("CAN BUS for Motor Controller Shield init fail");
 			Serial.println("Init CAN BUS Shield again");
 			delay(500);
 		}
@@ -41,7 +41,7 @@ MotorController::MotorController(int cs, int baudrate)
 // Reads RPM data from motor controller
 int MotorController::ReadRPM() {
 	CAN->sendMsgBuf(0x60b, 0, 8, (byte*)stmp60b);
-	delay(100);
+	delay(10);
 	if (CAN_MSGAVAIL == CAN->checkReceive())            // check if data coming
 	{
 		unsigned long id = 0;
@@ -55,6 +55,9 @@ int MotorController::ReadRPM() {
 		if (buf[1] == 0x03 && buf[2] == 0x20 && buf[3] == 0x01) {
 
 			RPM = Conversion::ByteToInt16(&buf[4]);
+			if (RPM < 0) {
+				RPM *= -1;
+			}
 //			Serial.print("Motor speed received: ");
 			Serial.println("Received data:");
 			Serial.print(buf[0], HEX); Serial.print("\t");
@@ -72,17 +75,6 @@ int MotorController::ReadRPM() {
 			// Indicates that the data has been read and stored to cache
 			return 1;
 
-			/*
-			Serial.print("Hitrost motorja: ");
-			Serial.print();
-			Serial.println();
-			Serial.print(buf[4], HEX);Serial.print("\t");
-			Serial.print(buf[5], HEX);Serial.print("\t");
-			Serial.print(buf[6], HEX);Serial.print("\t");
-			Serial.print(buf[7], HEX);Serial.print("\t");
-
-			Serial.println();
-			*/
 		}
 
 		// Indicates that the data hasa been read, but the returned data does not have RPM value
